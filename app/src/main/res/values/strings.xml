@@ -1,7 +1,6 @@
 <resources>
     <!-- Nombre de la aplicación -->
-    <string name="app_name">MiPrimeraAplicacion</string>
-
+    <string name="app_name">Timbre Inteligente</string>
     <!-- Lista de idiomas disponibles para la selección de preferencias del usuario -->
     <string-array name="idiomas">
         <!-- Opción de idioma Español -->

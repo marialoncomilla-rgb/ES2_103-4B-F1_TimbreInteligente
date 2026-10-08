@@ -1,56 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Contenedor principal ConstraintLayout para organizar la pantalla de Preferencias -->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PreferenciasActivity">
+    android:fillViewport="true"
+    android:background="#F3F7FC">
 
-    <!-- Título de la pantalla de Preferencias centrado en la parte superior -->
-    <TextView
-        android:id="@+id/txtTituloPreferencias"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Preferencias"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Contenedor lineal vertical de ancho completo ubicado debajo del título -->
     <LinearLayout
-        android:id="@+id/layoutPreferencias"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTituloPreferencias">
+        android:padding="24dp">
 
-        <!-- Switch para activar o desactivar la recepción de notificaciones -->
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/swNotificaciones"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Recibir notificaciones"
-            android:textSize="16sp" />
+            android:text="🔔 Preferencias del Timbre"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textColor="#17365D"
+            android:gravity="center"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp" />
 
-        <!-- Selector desplegable (Spinner) para elegir el idioma preferido -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Configura las opciones de tu timbre inalámbrico."
+            android:textSize="16sp"
+            android:textColor="#455A64"
+            android:gravity="center"
+            android:layout_marginBottom="30dp" />
+
+        <Switch
+            android:id="@+id/switchAlertas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Activar alertas del timbre"
+            android:textSize="17sp"
+            android:textColor="#263238"
+            android:minHeight="48dp"
+            android:layout_marginBottom="25dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ubicación del timbre"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#17365D"
+            android:layout_marginBottom="12dp" />
+
         <Spinner
-            android:id="@+id/spIdioma"
+            android:id="@+id/spinnerUbicacion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:entries="@array/idiomas"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:layout_marginBottom="30dp" />
+
+        <Button
+            android:id="@+id/btnGuardarPreferencias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar preferencias"
+            android:textAllCaps="false"
+            android:textSize="17sp"
+            android:backgroundTint="#17365D" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Proyecto Timbre Inteligente - INACAP"
+            android:textColor="#607D8B"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:layout_marginTop="35dp" />
 
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

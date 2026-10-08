@@ -1,3 +1,4 @@
+
 package com.example.miprimeraaplicacion.views
 
 import android.os.Bundle
@@ -7,87 +8,180 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.miprimeraaplicacion.R
-import com.example.miprimeraaplicacion.models.Lectura
+import com.example.miprimeraaplicacion.models.EventoTimbre
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 class FormularioLecturaActivity : AppCompatActivity() {
 
     private lateinit var db: FirebaseFirestore
-    private lateinit var txtTituloFormulario: TextView
-    private lateinit var edtDescripcion: EditText
-    private lateinit var edtValor: EditText
 
-    // Variable para saber si estamos editando (guardará el ID) o creando (será null)
-    private var lecturaIdEditar: String? = null
+    private lateinit var txtTituloFormulario: TextView
+    private lateinit var edtUbicacion: EditText
+    private lateinit var edtTipoEvento: EditText
+    private lateinit var edtDuracion: EditText
+    private lateinit var edtFechaHora: EditText
+
+    private var eventoIdEditar: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_formulario_lectura)
 
-        db = Firebase.firestore
+        db = FirebaseFirestore.getInstance()
 
-        txtTituloFormulario = findViewById(R.id.txtTituloFormulario)
-        edtDescripcion = findViewById(R.id.edtDescripcion)
-        edtValor = findViewById(R.id.edtValor)
+        txtTituloFormulario = findViewById(
+            R.id.txtTituloFormulario
+        )
 
-        // Revisamos si el Intent trae datos adjuntos (lo que significa que venimos a Editar)
-        lecturaIdEditar = intent.getStringExtra("lecturaId")
+        edtUbicacion = findViewById(
+            R.id.edtUbicacion
+        )
 
-        if (lecturaIdEditar != null) {
-            // MODO EDITAR
-            txtTituloFormulario.text = "Editar Lectura"
-            // Llenamos los campos con los datos actuales que nos enviaron
-            edtDescripcion.setText(intent.getStringExtra("lecturaDescripcion"))
-            val valor = intent.getDoubleExtra("lecturaValor", 0.0)
-            edtValor.setText(valor.toString())
+        edtTipoEvento = findViewById(
+            R.id.edtTipoEvento
+        )
+
+        edtDuracion = findViewById(
+            R.id.edtDuracion
+        )
+
+        edtFechaHora = findViewById(
+            R.id.edtFechaHora
+        )
+
+        eventoIdEditar = intent.getStringExtra("eventoId")
+
+        if (eventoIdEditar != null) {
+
+            txtTituloFormulario.text = "Editar evento del timbre"
+
+            edtUbicacion.setText(
+                intent.getStringExtra("eventoUbicacion")
+            )
+
+            edtTipoEvento.setText(
+                intent.getStringExtra("eventoTipo")
+            )
+
+            val duracion = intent.getDoubleExtra(
+                "eventoDuracion",
+                0.0
+            )
+
+            edtDuracion.setText(duracion.toString())
+
+            edtFechaHora.setText(
+                intent.getStringExtra("eventoFecha")
+            )
+
         } else {
-            // MODO CREAR
-            txtTituloFormulario.text = "Nueva Lectura"
+
+            txtTituloFormulario.text = "Nuevo evento del timbre"
         }
     }
 
     fun onGuardarLecturaClick(view: View) {
-        val descripcion = edtDescripcion.text.toString()
-        val valorString = edtValor.text.toString()
 
-        if (descripcion.isEmpty() || valorString.isEmpty()) {
-            Toast.makeText(this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show()
+        val ubicacion = edtUbicacion.text.toString().trim()
+        val tipoEvento = edtTipoEvento.text.toString().trim()
+        val duracionTexto = edtDuracion.text.toString().trim()
+        val fechaHora = edtFechaHora.text.toString().trim()
+
+        var valido = true
+
+        if (ubicacion.isEmpty()) {
+            edtUbicacion.error = "Ingresa la ubicación"
+            valido = false
+        }
+
+        if (tipoEvento.isEmpty()) {
+            edtTipoEvento.error = "Ingresa el tipo de evento"
+            valido = false
+        }
+
+        if (duracionTexto.isEmpty()) {
+            edtDuracion.error = "Ingresa la duración"
+            valido = false
+        }
+
+        if (fechaHora.isEmpty()) {
+            edtFechaHora.error = "Ingresa la fecha y hora"
+            valido = false
+        }
+
+        if (!valido) {
+            Toast.makeText(
+                this,
+                "Completa todos los campos",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
-        val valorDouble = valorString.toDoubleOrNull()
-        if (valorDouble == null) {
-            Toast.makeText(this, "El valor ingresado no es válido", Toast.LENGTH_SHORT).show()
+        val duracion = duracionTexto.toDoubleOrNull()
+
+        if (duracion == null ||
+            !duracion.isFinite() ||
+            duracion < 0
+        ) {
+            edtDuracion.error = "Ingresa una duración válida"
             return
         }
 
-        if (lecturaIdEditar != null) {
-            // MODO EDITAR: Usamos el ID existente para SOBREESCRIBIR el documento en Firebase
-            val lecturaActualizada = Lectura(id = lecturaIdEditar!!, descripcion = descripcion, valor = valorDouble)
-            
-            db.collection("lecturas").document(lecturaIdEditar!!)
-                .set(lecturaActualizada) // .set() reemplaza los datos del documento
+        val evento = EventoTimbre(
+            ubicacion = ubicacion,
+            tipoEvento = tipoEvento,
+            duracionSonido = duracion,
+            fechaHora = fechaHora
+        )
+
+        val id = eventoIdEditar
+
+        if (id != null) {
+
+            db.collection("eventos_timbre")
+                .document(id)
+                .set(evento)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Lectura actualizada", Toast.LENGTH_SHORT).show()
+
+                    Toast.makeText(
+                        this,
+                        "Evento actualizado correctamente",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     finish()
                 }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error al actualizar: ${e.message}", Toast.LENGTH_LONG).show()
+                .addOnFailureListener { error ->
+
+                    Toast.makeText(
+                        this,
+                        "Error al actualizar: ${error.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
+
         } else {
-            // MODO CREAR: No enviamos ID, usamos .add() para que Firestore lo cree
-            val nuevaLectura = Lectura(descripcion = descripcion, valor = valorDouble)
 
-            db.collection("lecturas")
-                .add(nuevaLectura)
+            db.collection("eventos_timbre")
+                .add(evento)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Lectura guardada", Toast.LENGTH_SHORT).show()
+
+                    Toast.makeText(
+                        this,
+                        "Evento guardado correctamente",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     finish()
                 }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error al guardar: ${e.message}", Toast.LENGTH_LONG).show()
+                .addOnFailureListener { error ->
+
+                    Toast.makeText(
+                        this,
+                        "Error al guardar: ${error.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
         }
     }
